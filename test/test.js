@@ -3,56 +3,44 @@ const assert = require('chai').assert;
 const Ajv = require('ajv');
 const parse = require('csv-parse/lib/sync');
 const url = require("url")
-const systems = parse(fs.readFileSync('systems.csv', 'utf8'));
+const systems = parse(fs.readFileSync('systems.csv', 'utf8'), {columns: true});
 
-
-
-  describe('System Tests', function() {
-    systems.forEach((system) => {
-      describe(`${system[1]} tests`, function() {
-        it('is okay', function() {
-          assert.isOk(true)
+describe('bike share systems', function() {
+  systems.forEach((system) => {
+    describe(system['Name'], function() {
+      describe('csv entry', function() {
+        it('has a valid country code', function() {
+          code = system['Country Code']
+          assert.isNotEmpty(code)
+          assert.lengthOf(code, 2)
         })
-      })
-    });
 
-    describe('test describe', function() {
-      it('is okay', function() {
-        assert.isOk(true)
+        it('has a system name', function() {
+          name = system['Name']
+          assert.isNotEmpty(name)
+        })
+
+        it('has a location', function() {
+          loc = system['Location']
+          assert.isNotEmpty(loc)
+        })
+
+        it('has a valid system id', function() {
+          id = system['System ID']
+          assert.isNotEmpty(id)
+        })
+
+        it('has a valid URL', function() {
+          parsedURL = url.parse(system['URL'])
+          assert.isNotEmpty(parsedURL.hostname)
+        })
+
+        it('has a valid autodiscovery URL', function() {
+          parsedURL = url.parse(system['Auto-Discovery URL'])
+          assert.isNotEmpty(parsedURL.hostname)
+          assert.include(parsedURL.path, 'gbfs', 'url path references gbfs')
+        })
       })
     })
-
-  });
-
-//   run();
-// }, 500);
-
-
-
-/*
-setTimeout(function() {
-
-  describe('All systems', function() {
-    // load and check CSV
-
-
-    for (var i in systems) {
-      system = systems[i]
-      var systemName = system[1]
-      describe(`${systemName}`, function() {
-        it("is a system", function() {
-          console.log(foo);
-          assert.isOk(true)
-        })
-      })
-    }
-
-    // describe('#indexOf()', function() {
-    //   it('should return -1 when the value is not present', function() {
-    //     console.log(systems);
-    //     assert.equal([1,2,3].indexOf(4), -1);
-    //   });
-    // });
-  });
-}, 2000);
-*/
+  })
+})
